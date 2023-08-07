@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <style>
+            input[type=date],
+            input[type=text],
+            select {
+                width: 100%;
+                padding: 12px 20px;
+                margin: 8px 0;
+                display: inline-block;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                box-sizing: border-box;
+            }
+
+            input[type=submit] {
+                width: 100%;
+                background-color: #4CAF50;
+                color: white;
+                padding: 14px 20px;
+                margin: 8px 0;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            input[type=submit]:hover {
+                background-color: #45a049;
+            }
+
+            div {
+                border-radius: 5px;
+                background-color: #f2f2f2;
+                padding: 20px;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <div>
+            <form>
+                <label for="from">From</label>
+                <input type="date" id="from" name="from">
+
+                <label for="to">To</label>
+                <input type="date" id="to" name="to">
+
+                <label for="category">Category</label>
+                <select id="category" name="category">
+                    <option value="crop">Crop</option>
+                    <option value="veg">Veg.</option>
+                    <option value="fruit">Fruit</option>
+                </select>
+
+                <input type="submit" value="Submit">
+            </form>
+
+            <div style="width: 80%; margin: auto;">
+                <canvas id="myChart"></canvas>
+            </div>
+        </div>
+
+        <script>
+            const DATA_COUNT = 12;
+            const labels = [];
+            for (let i = 0; i < DATA_COUNT; ++ i) {
+                labels.push(i.toString());
+            }
+            let datapoints = [
+                0,
+                20,
+                20,
+                60,
+                60,
+                120,
+                NaN,
+                180,
+                120,
+                125,
+                105,
+                110,
+                170
+            ];
+            const data = {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Cubic interpolation (monotone)',
+                        data: datapoints,
+                        borderColor: 'red',
+                        fill: false,
+                        cubicInterpolationMode: 'monotone',
+                        tension: 0.4
+                    }, {
+                        label: 'Cubic interpolation',
+                        data: datapoints,
+                        borderColor: 'blue',
+                        fill: false,
+                        tension: 0.4
+                    }, {
+                        label: 'Linear interpolation (default)',
+                        data: datapoints,
+                        borderColor: 'green',
+                        fill: false
+                    }
+                ]
+            };
+
+            const ctx = document.getElementById('myChart').getContext('2d');
+            const myChart = new Chart(ctx, {
+                type: 'line',
+                data: data,
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'X-axis Label'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Y-axis Label'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Function to update the chart with new data points
+            function updateChart(event) {
+                event.preventDefault();
+                const formData = new FormData(event.target);
+                datapoints = Array.from(formData.values(), Number);
+
+                myChart.data.datasets.forEach((dataset) => {
+                    dataset.data = datapoints;
+                });
+
+                myChart.update();
+            }
+
+            // Add event listener to the form submission
+            document.getElementById('dataForm').addEventListener('submit', updateChart);
+        </script>
+
+
+    </body>
+</html>
